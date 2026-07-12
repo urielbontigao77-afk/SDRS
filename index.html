@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrar &mdash; Document Request Office</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============== LOGIN SCREEN ============== -->
+<div id="login-screen">
+  <div class="login-brand">
+    <div class="mark">
+      <div class="seal">RO</div>
+      <div class="wordmark">Registrar<span>Document Request Office</span></div>
+    </div>
+    <div class="headline">
+      <h1>One request,<br>fully tracked.</h1>
+      <p>Submit transcript and certification requests, attach proof of payment, and follow every step from verification to pickup &mdash; no more lost receipts or guessing where your paperwork sits.</p>
+    </div>
+    <div class="ledger">
+      <div class="row"><span>System</span><span>Student Document Request</span></div>
+      <div class="row"><span>Pipeline</span><span>Verify &rarr; Process &rarr; Ready</span></div>
+    </div>
+  </div>
+
+  <div class="login-form-side">
+    <div class="login-card">
+      <div class="tabs">
+        <button id="tab-login" class="active" onclick="setAuthMode('login')">Log in</button>
+        <button id="tab-signup" onclick="setAuthMode('signup')">Sign up (Student)</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-form-wrap">
+        <h2>Welcome back</h2>
+        <p class="sub">Log in to your student or admin dashboard.</p>
+        <div class="field">
+          <label>Role</label>
+          <select id="login-role">
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="login-username" placeholder="e.g. juan.delacruz">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+        </div>
+        <div id="login-error" class="error-text hidden"></div>
+        <button class="btn btn-brass" style="width:100%; margin-top:6px;" onclick="handleLogin()">Log in</button>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="signup-form-wrap" class="hidden">
+        <h2>Create a student account</h2>
+        <p class="sub">Register to start submitting document requests.</p>
+        <div class="field">
+          <label>Full name</label>
+          <input type="text" id="signup-name" placeholder="Juan Dela Cruz">
+        </div>
+        <div class="field">
+          <label>Student ID</label>
+          <input type="text" id="signup-sid" placeholder="2021-04831">
+        </div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="signup-username" placeholder="Choose a username">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="signup-password" placeholder="At least 6 characters">
+        </div>
+        <div id="signup-error" class="error-text hidden"></div>
+        <button class="btn btn-brass" style="width:100%; margin-top:6px;" onclick="handleSignup()">Create account</button>
+        <div class="switch-line">Already registered? <a onclick="setAuthMode('login')">Log in instead</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== APP SCREEN ============== -->
+<div id="app-screen" class="hidden">
+  <div class="topbar">
+    <div class="mark">
+      <div class="seal">RO</div>
+      <div class="wordmark">Registrar<span>Document Request Office</span></div>
+    </div>
+    <div class="who">
+      <div id="who-avatar" class="avatar-circle" style="width:36px; height:36px; font-size:13px;"></div>
+      <div class="name">
+        <b id="who-name">&nbsp;</b>
+        <small id="who-role">&nbsp;</small>
+      </div>
+      <button class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,0.3); color:#fff;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'" onclick="handleLogout()">Log out</button>
+    </div>
+  </div>
+
+  <!-- STUDENT PAGE -->
+  <div id="student-page" class="page hidden">
+    <div class="page-head">
+      <div>
+        <h1 id="student-page-title">My requests</h1>
+        <p id="student-page-sub">Track every document request from submission to pickup.</p>
+      </div>
+      <button id="student-new-request-btn" class="btn btn-brass" onclick="openNewRequestModal()">+ New request</button>
+    </div>
+    <div class="pill-tabs" id="student-subnav">
+      <button class="active" onclick="setStudentView('requests')">My Requests</button>
+      <button onclick="setStudentView('profile')">My Profile</button>
+    </div>
+    <div id="student-requests-view">
+      <div id="student-tickets"></div>
+    </div>
+    <div id="student-profile-view" class="hidden"></div>
+  </div>
+
+  <!-- ADMIN PAGE -->
+  <div id="admin-page" class="page hidden">
+    <div class="page-head">
+      <div>
+        <h1 id="admin-page-title">Request queue</h1>
+        <p id="admin-page-sub">Verify payments and move requests through the pipeline.</p>
+      </div>
+    </div>
+    <div class="pill-tabs" id="admin-subnav">
+      <button class="active" onclick="setAdminView('queue')">Request Queue</button>
+      <button onclick="setAdminView('students')">Student Accounts</button>
+    </div>
+    <div id="admin-queue-view">
+      <div class="filter-tabs" id="admin-filter-tabs"></div>
+      <div id="admin-table-wrap"></div>
+    </div>
+    <div id="admin-students-view" class="hidden"></div>
+  </div>
+</div>
+
+<!-- ============== MODAL ROOT ============== -->
+<div id="modal-root"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
